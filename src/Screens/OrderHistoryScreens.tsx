@@ -23,6 +23,7 @@ const OrderScreen = ({ route, navigation }) => {
     const totalPrice = (basePrice * selectedSize.multiplier * quantity).toFixed(2);
 
     return (
+
         <View style={styles.container}>
             <Image
                 source={{ uri: product.image }}
@@ -32,7 +33,7 @@ const OrderScreen = ({ route, navigation }) => {
 
                 <View style={styles.BackIcon}>
                     <TouchableOpacity
-                   onPress={() => navigation.goBack()}
+                        onPress={() => navigation.goBack()}
                     >
                         <Icon
                             name="arrow-left"
@@ -45,10 +46,10 @@ const OrderScreen = ({ route, navigation }) => {
                 <View style={styles.favoraiteIcon}>
                     <TouchableOpacity>
                         <Icon
-                        name="favorite"
-                        size={40}
-                        color={'red'}
-                    />
+                            name="favorite"
+                            size={40}
+                            color={'red'}
+                        />
                     </TouchableOpacity>
                 </View>
 
@@ -159,30 +160,8 @@ const OrderScreen = ({ route, navigation }) => {
 
                         </Text>
                     </TouchableOpacity>
-
-
-
-
                 ))
-
-
-
-
-
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
             </View>
 
 
@@ -215,15 +194,7 @@ const OrderScreen = ({ route, navigation }) => {
 
                     </TouchableOpacity>
                 </View>
-
-
-
-
-
-
             </View>
-
-
             <Text style={{
                 color: 'white',
                 fontSize: 20,
@@ -232,6 +203,8 @@ const OrderScreen = ({ route, navigation }) => {
             }}>Total price: ${totalPrice}</Text>
 
             <TouchableOpacity
+
+  
                 style={{
                     width: 200,
                     height: 50,
@@ -242,14 +215,24 @@ const OrderScreen = ({ route, navigation }) => {
                     marginLeft: 100,
                     marginTop: 10,
                     borderRadius: 50,
-
-
-
-                }}>
+                }}
+                      onPress={() => {
+       navigation.navigate('Tab', {
+                 screen: 'Cart',
+  params: {
+    product,
+    selectedSize,
+    quantity,
+    totalPrice,
+  },
+});
+    
+}}>
                 <Text
                     style={{
                         color: 'white',
                         fontSize: 20,
+                        
 
 
                     }}>
