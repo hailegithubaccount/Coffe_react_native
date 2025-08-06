@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabNavigators from './src/Navigators/TabNavigators';
+import OrderHistoryScreens from './src/Screens/OrderHistoryScreens';
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -14,6 +15,12 @@ function App() {
         options={{animation:"slide_from_bottom",title:"Tab page"}}
         >
        </Stack.Screen>    
+        <Stack.Screen
+        name="details"
+        component={OrderHistoryScreens}
+        options={{animation:"slide_from_bottom",title:"order page"}}
+        >
+       </Stack.Screen> 
       </Stack.Navigator>
     </NavigationContainer>
   );
