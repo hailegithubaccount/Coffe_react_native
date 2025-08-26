@@ -1,87 +1,111 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-// Add at the beginning of your file
+import { useCart } from '../Context/CartContext'; // Adjust the path as needed
 
+const CartScreens = ({ navigation }) => {
+  const { cartItems, removeFromCart, clearCart } = useCart();
 
+  // Calculate total price
+  const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
 
-const CartScreens = ({ route }) => {
-  const { cartItems = [] } = route.params || {};
+  const renderCartItem = ({ item, index }) => (
+    <View style={styles.cartItem}>
+      <Image
+        source={{ uri: item.product.image }}
+        style={styles.itemImage}
+      />
+
+      <View style={styles.itemDetails}>
+        <Text style={styles.itemName}>
+          {item.product.name}
+        </Text>
+
+        <Text style={styles.itemText}>
+          Size: {item.selectedSize.label}
+        </Text>
+
+        <Text style={styles.itemText}>
+          Quantity: {item.quantity}
+        </Text>
+
+        <Text style={styles.itemPrice}>
+          Total: ${item.totalPrice}
+        </Text>
+      </View>
+      
+      <TouchableOpacity 
+        style={styles.removeButton}
+        onPress={() => removeFromCart(index)}
+      >
+        <Icon name="delete" size={24} color="red" />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <View style={{
-        flexDirection:'row',
-        justifyContent:'space-between',
-        margin:30,
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back" size={34} color="orange" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Cart</Text>
+        <Image
+          source={require("../assets/app_images/avatar.png")}
+          style={styles.avatar}
+        />
+      </View>
 
-      }}>
-              <Icon name="menu"
-               size={34}
-               color="orange"
-              />
-              <Text style={{color:'white',
-                fontSize:40,
-              }}>Cart</Text>
-              <Image
-              source={require("../assets/app_images/avatar.png")}
-              style={{width:50,height:50,borderRadius:20}}
-               />
-      
-            </View>
-      
-
-      {cartItems.map((item, index) => (
-        <View
-          key={index}
-          style={{
-            marginTop: 20,
-            width: "90%",
-            height: 180,
-            backgroundColor: 'rgba(47, 39, 39, 0.9)',
-            borderRadius: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: 10,
-            alignSelf: 'center',
-          }}
-        >
-          <Image
-            source={{ uri: item.product.image }}
-            style={{ width: 120, height: 120, borderRadius: 15 }}
+      {/* Cart Items */}
+      {cartItems.length > 0 ? (
+        <>
+          <FlatList
+            data={cartItems}
+            renderItem={renderCartItem}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
           />
-
-          <View style={{ marginLeft: 15, flex: 1 }}>
-            <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>
-              {item.product.name}
-            </Text>
-
-            <Text style={{ color: 'orange', marginTop: 5 }}>
-              Size: {item.selectedSize.label}
-            </Text>
-
-            <Text style={{ color: 'orange', marginTop: 5 }}>
-              Quantity: {item.quantity}
-            </Text>
-
-            <Text style={{ color: 'orange', marginTop: 5 }}>
-              Total: ${item.totalPrice}
-            </Text>
-
-            {/* Quantity buttons can be added here if needed */}
+          
+          {/* Checkout Section */}
+          <View style={styles.checkoutContainer}>
+            <View style={styles.totalContainer}>
+              <Text style={styles.totalText}>Total:</Text>
+              <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.checkoutButton}
+              onPress={() => {
+                // Process order
+                clearCart();
+                alert('Order placed successfully!');
+                navigation.goBack();
+              }}
+            >
+              <Text style={styles.checkoutText}>Proceed to Checkout</Text>
+            </TouchableOpacity>
           </View>
+        </>
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Icon name="remove-shopping-cart" size={80} color="#555" />
+          <Text style={styles.emptyText}>Your cart is empty</Text>
+          <Text style={styles.emptySubtext}>Add some items to get started</Text>
+          <TouchableOpacity 
+            style={styles.shopButton}
+            onPress={() => navigation.navigate('Home')}
+          >
+            <Text style={styles.shopButtonText}>Continue Shopping</Text>
+          </TouchableOpacity>
         </View>
-      ))}
-
-      {cartItems.length === 0 && (
-        <Text style={{ color: 'white', fontSize: 18, textAlign: 'center', marginTop: 40 }}>
-          Your cart is empty.
-        </Text>
       )}
     </View>
   );
 };
 
+// ... keep your styles the same
 
 const styles = StyleSheet.create({
   container: {
@@ -89,14 +113,131 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     paddingTop: 40,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
     marginBottom: 20,
   },
+  headerTitle: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  listContent: {
+    paddingHorizontal: 15,
+    paddingBottom: 100, // Space for checkout section
+  },
+  cartItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(47, 39, 39, 0.9)',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 15,
+  },
+  itemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+  },
+  itemDetails: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  itemName: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  itemText: {
+    color: 'orange',
+    fontSize: 14,
+    marginBottom: 3,
+  },
+  itemPrice: {
+    color: 'orange',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+  removeButton: {
+    padding: 5,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  emptyText: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  emptySubtext: {
+    color: '#999',
+    fontSize: 16,
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  shopButton: {
+    backgroundColor: 'orange',
+    paddingHorizontal: 25,
+    paddingVertical: 12,
+    borderRadius: 25,
+  },
+  shopButtonText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  checkoutContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#1a1a1a',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  totalContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  totalText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  totalPrice: {
+    color: 'orange',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  checkoutButton: {
+    backgroundColor: 'orange',
+    padding: 15,
+    borderRadius: 15,
+    alignItems: 'center',
+  },
+  checkoutText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
-
 
 export default CartScreens;

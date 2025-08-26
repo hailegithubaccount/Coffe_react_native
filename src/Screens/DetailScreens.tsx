@@ -107,11 +107,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
     resizeMode: 'contain',
-    marginVertical: 1,
+    
   },
   paymentContainer: {
     flex: 1,
-    marginTop: 10,
+   
   },
   paymentHeader: {
     fontSize: 24,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   gradientItem: {
     borderRadius: 50,
-    marginBottom: 10,
+    marginBottom: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   itemContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
+    padding: 10,
     borderRadius:500
   },
   itemImage: {

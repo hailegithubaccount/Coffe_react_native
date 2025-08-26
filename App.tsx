@@ -5,11 +5,12 @@ import TabNavigators from './src/Navigators/TabNavigators';
 import OrderHistoryScreens from './src/Screens/OrderHistoryScreens';
 import LoginScreens from './src/Screens/LoginScreens';
 import CartScreens from './src/Screens/CartScreens';
-import PushNotification from 'react-native-push-notification';
+import { CartProvider } from './src/Context/CartContext'; 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+     <CartProvider>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown:false}}>
         <Stack.Screen name="Login" component={LoginScreens} />
@@ -28,6 +29,7 @@ function App() {
        
       </Stack.Navigator>
     </NavigationContainer>
+    </CartProvider>
   );
 }
 

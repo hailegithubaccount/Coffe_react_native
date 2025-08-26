@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { useCart } from '../Context/CartContext';
 
 const sizes = [
     { label: 'Small', multiplier: 1 },
@@ -13,6 +14,7 @@ const sizes = [
 ];
 
 const OrderScreen = ({ route }) => {
+    const { addToCart } = useCart();
     const { product } = route.params;
     const [selectedSize, setSelectedSize] = useState(sizes[0]);
     const [quantity, setQuantity] = useState(1);
@@ -204,55 +206,28 @@ const OrderScreen = ({ route }) => {
                 marginTop: 29,
             }}>Total price: ${totalPrice}</Text>
 
-            <TouchableOpacity
+           <TouchableOpacity
+  style={{
+    width: 200,
+    height: 50,
+    backgroundColor: 'orange',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 100,
+    marginTop: 10,
+    borderRadius: 50,
+  }}
+  onPress={() => {
+    addToCart(product, selectedSize, quantity);
+    navigation.navigate('Tab', { screen: 'Cart' }); // ✅ This switches to the Cart tab
+  }}
+>
+  <Text style={{ color: 'white', fontSize: 20 }}>
+    Add To Cart
+  </Text>
+</TouchableOpacity>
 
-
-                style={{
-                    width: 200,
-                    height: 50,
-                    backgroundColor: 'orange',
-                    alignContent: 'center',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 100,
-                    marginTop: 10,
-                    borderRadius: 50,
-                }}
-                onPress={() => {
-                    navigation.navigate('Tab', {
-                        screen: 'Cart',
-                        params: {
-                            cartItems: [
-                                {
-                                    product,
-                                    selectedSize,
-                                    quantity,
-                                    totalPrice,
-                                },
-                            ],
-                        },
-                    });
-
-                }}
-
-
-
-
-            >
-                <Text
-                    style={{
-                        color: 'white',
-                        fontSize: 20,
-
-
-
-                    }}>
-                    Add To Cart
-
-                </Text>
-
-
-            </TouchableOpacity>
         </View >
     );
 };
