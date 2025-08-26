@@ -31,6 +31,8 @@ const categoryGradients = {
 const DetailScreens = () => {
   const navigation = useNavigation();
 
+ 
+
   return (
     <LinearGradient 
       colors={['#0C0C0C', '#1A1A1A']} 
@@ -80,6 +82,11 @@ const DetailScreens = () => {
           </View>
         </ScrollView>
       </View>
+      <View>
+             <Text style={styles.totalText}>Total:price</Text>
+             <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
+      </View>
+    
     </LinearGradient>
   );
 }
@@ -156,5 +163,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
+  },
+   totalText: {
+    color: 'white',
+    fontSize: 15,
+    marginTop:20
+   
+  },
+  totalPrice: {
+    color: 'orange',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });

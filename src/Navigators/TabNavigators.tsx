@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react';
 import {createBottomTabNavigator} from'@react-navigation/bottom-tabs'
 import CartScreens from '../Screens/CartScreens';
-import DetailScreens from '../Screens/DetailScreens';
+import DetailScreens from '../Screens/PaymentScreens';
 import FavouriteScreens from '../Screens/FavouriteScreens';
 import HomeScreens from '../Screens/HomeScreens';
 import { COLORS } from '../theme/theme';

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useCart } from '../Context/CartContext'; // Adjust the path as needed
+import { COLORS } from '../theme/theme';
 
 const CartScreens = ({ navigation }) => {
   const { cartItems, removeFromCart, clearCart } = useCart();
@@ -70,22 +71,30 @@ const CartScreens = ({ navigation }) => {
           
           {/* Checkout Section */}
           <View style={styles.checkoutContainer}>
+            
             <View style={styles.totalContainer}>
-              <Text style={styles.totalText}>Total:</Text>
+
+              <Text style={styles.totalText}>Total:price</Text>
               <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
             </View>
+            
             
             <TouchableOpacity 
               style={styles.checkoutButton}
               onPress={() => {
                 // Process order
                 clearCart();
-                alert('Order placed successfully!');
-                navigation.goBack();
-              }}
+                
+             navigation.navigate('payment');
+ }}
+            
             >
-              <Text style={styles.checkoutText}>Proceed to Checkout</Text>
+              <Text style={styles.checkoutText}>Pay</Text>
             </TouchableOpacity>
+          
+          
+         
+         
           </View>
         </>
       ) : (
@@ -202,25 +211,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   checkoutContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#1a1a1a',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    flexDirection:'row',
+    marginBottom:100,
+    justifyContent:'space-between'
+    
+   
+   
+   
   },
   totalContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    
+   
     alignItems: 'center',
     marginBottom: 15,
   },
   totalText: {
     color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 15,
+    marginTop:20
+   
   },
   totalPrice: {
     color: 'orange',
@@ -228,13 +237,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   checkoutButton: {
-    backgroundColor: 'orange',
-    padding: 15,
-    borderRadius: 15,
-    alignItems: 'center',
+    backgroundColor: COLORS.primaryOrangeHex,
+    width:250,
+    margin:2,
+    borderRadius:20,
+    alignItems:'center',
+    justifyContent:'center',
+    
+    
+
+
   },
   checkoutText: {
-    color: 'black',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
