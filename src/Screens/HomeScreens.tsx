@@ -43,7 +43,11 @@ const HomeScreens = ({ navigation }) => {
       {/* Top bar */}
       <View style={styles.imagewithicon}>
         <Icon name="menu" size={34} color="orange" />
-        <Image source={require("../assets/app_images/avatar.png")} style={{ width: 50, height: 50, borderRadius: 20 }} />
+        <TouchableOpacity
+        onPress={()=>navigation.navigate('profile')}>
+         <Image source={require("../assets/app_images/avatar.png")} style={{ width: 50, height: 50, borderRadius: 20 }} />
+        </TouchableOpacity>
+        
       </View>
 
       {/* Header text */}

@@ -7,6 +7,7 @@ import LoginScreens from './src/Screens/LoginScreens';
 import CartScreens from './src/Screens/CartScreens';
 import PaymentScreens from './src/Screens/PaymentScreens'
 import { CartProvider } from './src/Context/CartContext'; 
+import profileScreens from './src/Screens/ProfileScreens'
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,13 @@ function App() {
         <Stack.Screen
         name="payment"
         component={PaymentScreens}
+        options={{animation:"slide_from_bottom",title:"order page"}}
+        >
+       </Stack.Screen> 
+
+        <Stack.Screen
+        name="profile"
+        component={profileScreens }
         options={{animation:"slide_from_bottom",title:"order page"}}
         >
        </Stack.Screen> 
