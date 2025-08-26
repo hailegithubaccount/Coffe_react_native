@@ -5,10 +5,11 @@ const CartContext = createContext();
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
-      // Check if item already exists in cart
+      // Check if the same product with same size already exists in cart
       const existingItemIndex = state.items.findIndex(
-        item => item.product.name === action.payload.product.name && 
-               item.selectedSize.label === action.payload.selectedSize.label
+        item => 
+          item.product.id === action.payload.product.id && 
+          item.selectedSize.label === action.payload.selectedSize.label
       );
       
       if (existingItemIndex >= 0) {
@@ -17,6 +18,7 @@ const cartReducer = (state, action) => {
         updatedItems[existingItemIndex].quantity += action.payload.quantity;
         updatedItems[existingItemIndex].totalPrice = (
           parseFloat(updatedItems[existingItemIndex].product.price.replace('$', '')) * 
+          updatedItems[existingItemIndex].selectedSize.multiplier * 
           updatedItems[existingItemIndex].quantity
         ).toFixed(2);
         
@@ -43,10 +45,9 @@ const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
   const [cartState, dispatch] = useReducer(cartReducer, { items: [] });
 
-  const addToCart = (product, selectedSize, quantity = 1) => {
-    const totalPrice = (
-      parseFloat(product.price.replace('$', '')) * quantity
-    ).toFixed(2);
+  const addToCart = (product, selectedSize, quantity) => {
+    const basePrice = parseFloat(product.price.replace('$', ''));
+    const totalPrice = (basePrice * selectedSize.multiplier * quantity).toFixed(2);
     
     dispatch({
       type: 'ADD_TO_CART',

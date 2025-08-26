@@ -7,6 +7,7 @@ import { COLORS } from '../theme/theme';
 const CartScreens = ({ navigation }) => {
   const { cartItems, removeFromCart, clearCart } = useCart();
 
+
   // Calculate total price
   const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
 
@@ -81,12 +82,7 @@ const CartScreens = ({ navigation }) => {
             
             <TouchableOpacity 
               style={styles.checkoutButton}
-              onPress={() => {
-                // Process order
-                clearCart();
-                
-             navigation.navigate('payment');
- }}
+            onPress={() => {navigation.navigate('payment',{totalPrice})}}
             
             >
               <Text style={styles.checkoutText}>Pay</Text>

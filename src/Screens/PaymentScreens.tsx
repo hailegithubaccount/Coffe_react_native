@@ -28,8 +28,9 @@ const categoryGradients = {
   "AmazonPay": ['#9D50BB', '#6E48AA']
 };
 
-const DetailScreens = () => {
+const DetailScreens = ({route}) => {
   const navigation = useNavigation();
+  const { totalPrice } = route.params;
 
  
 
@@ -82,10 +83,27 @@ const DetailScreens = () => {
           </View>
         </ScrollView>
       </View>
-      <View>
+      <View style={{
+        flexDirection:'row',
+        justifyContent:'space-between'
+      }}>
+        <View>
              <Text style={styles.totalText}>Total:price</Text>
              <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
       </View>
+       <View  style={styles.checkoutButton}>
+        <TouchableOpacity>
+          <Text style={styles.checkoutText}>
+         pay from credit card
+          </Text>
+
+        </TouchableOpacity>
+
+       </View>
+
+      </View>
+      
+
     
     </LinearGradient>
   );
@@ -160,7 +178,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   itemText: {
-    color: 'white',
+    color: 'orange',
     fontSize: 16,
     fontWeight: '500',
   },
@@ -175,4 +193,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  checkoutText:{
+      color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+
+  },
+  checkoutButton:{
+    backgroundColor: COLORS.primaryOrangeHex,
+    width:250,
+    margin:2,
+    borderRadius:20,
+    alignItems:'center',
+    justifyContent:'center',
+  }
+
 });
