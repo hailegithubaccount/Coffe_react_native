@@ -4,6 +4,7 @@ import { COLORS } from '../theme/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const sizes = [
     { label: 'Small', multiplier: 1 },
@@ -11,10 +12,11 @@ const sizes = [
     { label: 'Large', multiplier: 2 },
 ];
 
-const OrderScreen = ({ route, navigation }) => {
+const OrderScreen = ({ route }) => {
     const { product } = route.params;
     const [selectedSize, setSelectedSize] = useState(sizes[0]);
     const [quantity, setQuantity] = useState(1);
+    const navigation = useNavigation();
 
     // Extract base price number from product.price string (e.g. '$3' -> 3)
     const basePrice = parseFloat(product.price.replace('$', ''));
@@ -204,7 +206,7 @@ const OrderScreen = ({ route, navigation }) => {
 
             <TouchableOpacity
 
-  
+
                 style={{
                     width: 200,
                     height: 50,
@@ -216,23 +218,32 @@ const OrderScreen = ({ route, navigation }) => {
                     marginTop: 10,
                     borderRadius: 50,
                 }}
-                      onPress={() => {
-       navigation.navigate('Tab', {
-                 screen: 'Cart',
-  params: {
-    product,
-    selectedSize,
-    quantity,
-    totalPrice,
-  },
-});
-    
-}}>
+                onPress={() => {
+                    navigation.navigate('Tab', {
+                        screen: 'Cart',
+                        params: {
+                            cartItems: [
+                                {
+                                    product,
+                                    selectedSize,
+                                    quantity,
+                                    totalPrice,
+                                },
+                            ],
+                        },
+                    });
+
+                }}
+
+
+
+
+            >
                 <Text
                     style={{
                         color: 'white',
                         fontSize: 20,
-                        
+
 
 
                     }}>
@@ -242,7 +253,7 @@ const OrderScreen = ({ route, navigation }) => {
 
 
             </TouchableOpacity>
-        </View>
+        </View >
     );
 };
 

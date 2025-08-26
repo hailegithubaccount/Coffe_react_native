@@ -5,6 +5,7 @@ import TabNavigators from './src/Navigators/TabNavigators';
 import OrderHistoryScreens from './src/Screens/OrderHistoryScreens';
 import LoginScreens from './src/Screens/LoginScreens';
 import CartScreens from './src/Screens/CartScreens';
+import PushNotification from 'react-native-push-notification';
 const Stack = createNativeStackNavigator();
 
 function App() {

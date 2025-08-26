@@ -1,146 +1,102 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+// Add at the beginning of your file
+
+
+
 const CartScreens = ({ route }) => {
-  const { product, selectedSize, quantity, totalPrice } = route.params;
+  const { cartItems = [] } = route.params || {};
 
   return (
     <View style={styles.container}>
-
       <View style={{
-        flexDirection: "row",
-        justifyContent: 'space-between',
-        top: 59,
-        backgroundColor: '#21262E',
-        marginBottom: 20,
-
+        flexDirection:'row',
+        justifyContent:'space-between',
+        margin:30,
 
       }}>
-        <Icon name="menu"
-          size={34}
-          color="orange"
-        />
-        <Text style={{
-          color: 'white',
-          fontSize: 23
-        }}>
-          Cart
-        </Text>
-        <Image
-          source={require("../assets/app_images/avatar.png")}
-          style={{ width: 50, height: 50, borderRadius: 20 }}
-        />
-
-      </View>
-      <View style={{
-        marginTop: 50, width: "100%", height: 180, backgroundColor: 'rgba(47, 39, 39, 0.9)', borderRadius: 40, flexDirection: 'row', gap: 20
-      }}
-      >
-        <Image
-          source={{ uri: product.image }}
-          style={{ width: 140, height: 140, borderRadius: 20, marginTop: 20, marginLeft: 10 }}
-        />
-        <View>
-          <View>
-            <Text style={{
-              color: 'white',
-              marginTop: 20,
-              fontSize: 20
-
-            }}>{product.name}</Text>
-          </View>
-
-          <View style={{ flexDirection: 'row' }}>
-            <View
-              style={{ margin: 10, width: 50, height: 40, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}
-            >
-              <Text style={{
-                color: 'white'
-              }}>M</Text>
+              <Icon name="menu"
+               size={34}
+               color="orange"
+              />
+              <Text style={{color:'white',
+                fontSize:40,
+              }}>Cart</Text>
+              <Image
+              source={require("../assets/app_images/avatar.png")}
+              style={{width:50,height:50,borderRadius:20}}
+               />
+      
             </View>
-            <View>
-              <Text
-                style={{
-                  color: 'orange',
-                  marginTop: 20,
-                }}>
-                ${totalPrice}
-              </Text>
+      
 
-            </View>
+      {cartItems.map((item, index) => (
+        <View
+          key={index}
+          style={{
+            marginTop: 20,
+            width: "90%",
+            height: 180,
+            backgroundColor: 'rgba(47, 39, 39, 0.9)',
+            borderRadius: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 10,
+            alignSelf: 'center',
+          }}
+        >
+          <Image
+            source={{ uri: item.product.image }}
+            style={{ width: 120, height: 120, borderRadius: 15 }}
+          />
 
+          <View style={{ marginLeft: 15, flex: 1 }}>
+            <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>
+              {item.product.name}
+            </Text>
+
+            <Text style={{ color: 'orange', marginTop: 5 }}>
+              Size: {item.selectedSize.label}
+            </Text>
+
+            <Text style={{ color: 'orange', marginTop: 5 }}>
+              Quantity: {item.quantity}
+            </Text>
+
+            <Text style={{ color: 'orange', marginTop: 5 }}>
+              Total: ${item.totalPrice}
+            </Text>
+
+            {/* Quantity buttons can be added here if needed */}
           </View>
-
-<View style={{flexDirection:'row',gap:10}}>
-  <TouchableOpacity
-  
-  style={{
-    width:20,
-    height:20,
-    backgroundColor:'orange'
-  }}
- 
-  
-  >
-     <Text style={{fontSize:20,alignContent:'center',justifyContent:'center',color:'black'}}>
-      -
-  </Text>
-
-  </TouchableOpacity>
-  <Text style={{color:'white'}}>
-    {quantity}
-    
-  </Text>
-  <TouchableOpacity
-   style={{
-    width:20,
-    height:20,
-    backgroundColor:'orange'
-  }}
- 
-  
-  >
-     <Text style={{fontSize:20,alignContent:'center',justifyContent:'center',color:'black'}}>
-      +
-  </Text>
-
-  </TouchableOpacity>
-
-</View>
-          
         </View>
+      ))}
 
-
-
-
-
-
-
-
-      </View>
-
+      {cartItems.length === 0 && (
+        <Text style={{ color: 'white', fontSize: 18, textAlign: 'center', marginTop: 40 }}>
+          Your cart is empty.
+        </Text>
+      )}
     </View>
   );
 };
 
-export default CartScreens;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     backgroundColor: '#000',
+    paddingTop: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
     marginBottom: 20,
-    color: 'white',
-  },
-  text: {
-    fontSize: 18,
-    color: 'white',
-    marginTop: 50
-
   },
 });
+
+
+export default CartScreens;
