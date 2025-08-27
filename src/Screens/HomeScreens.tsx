@@ -1,7 +1,9 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View, FlatList, Dimensions } from 'react-native';
-import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View, FlatList, Dimensions, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { COLORS } from '../theme/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const categories = ['All', 'Tea', 'Coffee', 'Milk'];
 
@@ -17,9 +19,12 @@ const itemsByCategory = {
 };
 
 const HomeScreens = ({ navigation }) => {
+  const [profile, setProfile] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const screenWidth = Dimensions.get('window').width;
-  const itemWidth = Math.floor((screenWidth - 40) / 2); // cleaner spacing
+  const itemWidth = Math.floor((screenWidth - 40) / 2);
   const itemHeight = 240;
 
   const renderItem = ({ item }) => (
@@ -37,17 +42,71 @@ const HomeScreens = ({ navigation }) => {
       </View>
     </View>
   );
+ 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          setError('No authentication token found');
+          setLoading(false);
+          return;
+        }
+        const response = await axios.get(
+          'https://backend-rendered-1.onrender.com/api/students/profile',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.data.status === 'success') {
+          setProfile(response.data.data);
+        } else {
+          setError(response.data.message || 'Failed to fetch profile');
+        }
+      } catch (err) {
+        console.error('Profile fetch error:', err);
+        setError(err.response?.data?.message || err.message || 'Failed to fetch profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+ 
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <ActivityIndicator size="large" color={COLORS.primaryOrangeHex} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       {/* Top bar */}
       <View style={styles.imagewithicon}>
         <Icon name="menu" size={34} color="orange" />
-        <TouchableOpacity
-        onPress={()=>navigation.navigate('profile')}>
-         <Image source={require("../assets/app_images/avatar.png")} style={{ width: 50, height: 50, borderRadius: 20 }} />
+
+        <TouchableOpacity onPress={() => navigation.navigate('profile')}>
+          {profile && profile.photoUrl ? (
+            <Image 
+              source={{ uri: profile.photoUrl }} 
+              style={styles.profileImage}
+            />
+          ) : profile ? (
+            <View style={styles.profilePlaceholder}>
+              <Text style={styles.profileInitials}>
+                {profile.firstName?.charAt(0)}{profile.lastName?.charAt(0)}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.profilePlaceholder}>
+              <Icon name="person" size={24} color="white" />
+            </View>
+          )}
         </TouchableOpacity>
-        
       </View>
 
       {/* Header text */}
@@ -78,13 +137,15 @@ const HomeScreens = ({ navigation }) => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 40,
     backgroundColor: COLORS.primaryBlackHex,
+  },
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imagewithicon: {
     flexDirection: 'row',
@@ -93,6 +154,25 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginTop: 20,
     backgroundColor: '#21262E',
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  profilePlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.primaryOrangeHex,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileInitials: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   headerText: {
     fontWeight: '600',
@@ -165,4 +245,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 });
+
 export default HomeScreens;
