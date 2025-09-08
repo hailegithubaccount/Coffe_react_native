@@ -525,16 +525,15 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 16,
     justifyContent: 'center',
   },
   containerofreal: {
-    height: 120,
-    overflow: 'hidden',
-    marginVertical: 10,
+ 
+   
   },
   imageofreal: {
-    width: 335,
+    width: 315,
     height: 100,
     marginHorizontal: 10,
     borderRadius: 15,
@@ -667,11 +666,12 @@ const styles = StyleSheet.create({
   cardButton: {
     backgroundColor: 'rgba(255,255,255,0.1)',
     width: 160,
-    height: 135,
+    height: 125,
     borderRadius: 20,
     alignItems: 'center',
     paddingHorizontal: 10,
     justifyContent: 'center',
+    marginBottom:10
   },
   cardButtonImage: {
     width: 60,

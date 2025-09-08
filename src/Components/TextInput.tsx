@@ -42,7 +42,7 @@ export default CustomTextInput;
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 15,
   },
   label: {

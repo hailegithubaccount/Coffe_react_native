@@ -2,7 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   FlatList,
   Image,
   TouchableOpacity,
@@ -11,19 +10,23 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import OtherBanktopbar from '../Components/otherBanktopbar';
 import Colors from '../Components/Colors';
+import CustomTextInput from '../Components/TextInput';
+import HistoryList from '../Components/History';
+import CustomButton from '../Components/CustomButton';
 
-const EnterAccountNumber = ({ navigation }) => {
-  // Previous transfers (history)
+const EnterAccountNumber = ({ navigation, route }) => {
+  const { bankItem } = route.params;
+
+  // Beneficiaries (History)
   const [history] = useState([
     {
       id: '1',
       name: 'Abebe Kebede Lemma',
       bankname: 'Commercial Bank of Ethiopia',
-      AccountNumber: '1000045632466',
-      image: require('../assets/Banks/commercialBank.png'),
+      AccountNumber: '100004234546',
       imageback: require('../assets/ic_round-navigate-next.png'),
     },
     {
@@ -31,20 +34,11 @@ const EnterAccountNumber = ({ navigation }) => {
       name: 'Abebe Kebede Lemma',
       bankname: 'Commercial Bank of Ethiopia',
       AccountNumber: '1000045632466',
-      image: require('../assets/Banks/commercialBank.png'),
-      imageback: require('../assets/ic_round-navigate-next.png'),
-    },
-    {
-      id: '3',
-      name: 'Abebe Kebede Lemma',
-      bankname: 'Commercial Bank of Ethiopia',
-      AccountNumber: '1000045632466',
-      image: require('../assets/Banks/commercialBank.png'),
       imageback: require('../assets/ic_round-navigate-next.png'),
     },
   ]);
 
-  // Fake accounts database
+  // Fake Accounts DB1000045632466
   const accounts = [
     {
       AccountNumber: '100004234546',
@@ -53,25 +47,29 @@ const EnterAccountNumber = ({ navigation }) => {
       imageback: require('../assets/ic_round-navigate-next.png'),
       ImageBackground: require('../assets/Banks/backroundforaccounr.png'),
     },
-    { AccountNumber: '789101', holder: 'Alice Smith' },
+    {
+      AccountNumber: '1000045632499',
+      holder: 'Kebede Lema Ayenew',
+      image: require('../assets/Banks/photouser.png'),
+      imageback: require('../assets/ic_round-navigate-next.png'),
+      ImageBackground: require('../assets/Banks/backroundforaccounr.png'),
+    },
     { AccountNumber: '555666', holder: 'Michael Brown' },
     { AccountNumber: '999888', holder: 'Sarah Johnson' },
   ];
 
-  // State for input and matching
+  // State
   const [account, setAccount] = useState('');
-  const [matchedAccounts, setMatchedAccounts] = useState([]);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [placeholder, setPlaceholder] = useState('000000000000');
+  const [historySelected, setHistorySelected] = useState(false);
 
-  useEffect(() => {
-    if (account === '') {
-      setMatchedAccounts([]);
-    } else {
-      const matches = accounts.filter((a) =>
-        a.AccountNumber.startsWith(account)
-      );
-      setMatchedAccounts(matches);
-    }
-  }, [account]);
+
+    const handleCheckAccount = () => {
+    const accountToCheck = account !== '' ? account : placeholder;
+    const found = accounts.find(a => a.AccountNumber === accountToCheck);
+    setSelectedAccount(found || 'not-found');
+  };
 
   return (
     <KeyboardAvoidingView
@@ -80,7 +78,7 @@ const EnterAccountNumber = ({ navigation }) => {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
-          <OtherBanktopbar title="Transfer to Other Bank" />
+          <OtherBanktopbar title="Transfer to other bank" />
           <View style={{ backgroundColor: 'white', flex: 1 }}>
             <View style={styles.TopText}>
               <Text style={styles.FirstText}>Enter Account Number</Text>
@@ -89,126 +87,109 @@ const EnterAccountNumber = ({ navigation }) => {
               </Text>
             </View>
 
-            <View>
-              <Text style={styles.accountText}>Account Number</Text>
+            {/* Input */}
+            <CustomTextInput
+              label={'Account Number'}
+              placeholder={placeholder}
+              value={account}
+              onChangeText={(val: React.SetStateAction<string>) =>
+                setAccount(val)
+              }
+              keyboardType="number-pad"
+            />
 
-              {/* Input box using device keyboard */}
-              <TextInput
-                style={styles.input}
-                placeholder="000000000000"
-                value={account}
-                onChangeText={setAccount}
-                keyboardType="number-pad"
-                autoFocus={true}
+            {/* Show Beneficiaries when no input */}
+            {!historySelected && account === '' && (
+              <HistoryList
+                history={history}
+                bankImage={bankItem.image}
+                onSelect={item => {
+                  setPlaceholder(item.AccountNumber); 
+                  setAccount(''); 
+                  setSelectedAccount(null); 
+                  setHistorySelected(true);
+                }}
               />
+            )}
 
-              {account === '' ? (
-                <View style={{ marginHorizontal: '3%', marginTop: 10 }}>
-                  <Text style={styles.historyHeaderText}>Beneficiaries</Text>
-                  <FlatList
-                    data={history}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                      <View style={styles.HistoryBox}>
-                        <View style={styles.both}>
-                          <Image source={item.image} style={styles.bankimage} />
-                          <View>
-                            <Text style={styles.historyItem}>{item.name}</Text>
-                            <Text style={styles.historyItem2}>
-                              {item.bankname}{' '}
-                              <Text>({item.AccountNumber})</Text>
-                            </Text>
-                          </View>
-                        </View>
-                        <TouchableOpacity
-                          onPress={() =>
-                            navigation.navigate('TypeMoney', {
-                              AccountNumber: item.AccountNumber,
-                            })
-                          }
-                        >
-                          <Image source={item.imageback} style={styles.backicon} />
-                        </TouchableOpacity>
-                      </View>
-                    )}
-                  />
-                </View>
-              ) : matchedAccounts.length > 0 ? (
-                <FlatList
-                  data={matchedAccounts}
-                  keyExtractor={(item) => item.AccountNumber}
-                  renderItem={({ item }) => (
-                    <ImageBackground
-                      source={item.ImageBackground}
-                      style={styles.backgroundimage}
+            {/* Show account only AFTER pressing Check */}
+            {selectedAccount && selectedAccount !== 'not-found' && (
+              <TouchableOpacity   
+               style={{
+                margin:8,
+                
+               }}
+              
+              onPress={() =>
+                        navigation.navigate('TypeMoney', {recipient:selectedAccount}
+                        )
+                      }>
+                 <ImageBackground
+                source={selectedAccount.ImageBackground}
+                style={styles.backgroundimage}
+              >
+                <View style={styles.AccountBox}>
+                  <View style={styles.bothimageandtextfordisplayaccount}>
+                    <View
+                      style={{
+                        width: 65,
+                        height: 65,
+                        borderWidth: 1,
+                        borderRadius: 50,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                      }}
                     >
-                      <View style={styles.AccountBox}>
-                        <View style={styles.bothimageandtextfordisplayaccount}>
-                          <View
-                            style={{
-                              width: 65,
-                              height: 65,
-                              borderWidth: 1,
-                              borderRadius: 50,
-                              justifyContent: 'center',
-                              alignContent: 'center',
-                            }}
-                          >
-                            <Image
-                              source={item.image}
-                              style={styles.imageofaccountdisplay}
-                            />
-                          </View>
-                          <View style={styles.holderPLUSaccount}>
-                            <Text style={styles.holderName}>{item.holder}</Text>
-                            <Text style={styles.holderAccount}>
-                              {item.AccountNumber}
-                            </Text>
-                          </View>
-                        </View>
+                      {selectedAccount.image && (
+                        <Image
+                          source={selectedAccount.image}
+                          style={styles.imageofaccountdisplay}
+                        />
+                      )}
+                    </View>
+                    <View style={styles.holderPLUSaccount}>
+                      <Text style={styles.holderName}>
+                        {selectedAccount.holder}
+                      </Text>
+                      <Text style={styles.holderAccount}>
+                        {selectedAccount.AccountNumber}
+                      </Text>
+                    </View>
+                  </View>
 
-                        <View style={{ justifyContent: 'center' }}>
-                          <TouchableOpacity
-                            onPress={() =>
-                              navigation.navigate('TypeMoney', {
-                                AccountNumber: item.AccountNumber,
-                              })
-                            }
-                          >
-                            <Image
-                              source={item.imageback}
-                              style={styles.backiconforaccount}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </ImageBackground>
-                  )}
-                />
-              ) : (
-                <View style={styles.accountInfo}>
-                  <Text style={styles.notFoundText}>Account not found</Text>
+                  <View style={{ justifyContent: 'center' }}>
+                    <TouchableOpacity>
+                      <Image
+                        source={selectedAccount.imageback}
+                        style={styles.backiconforaccount}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              )}
-            </View>
+              </ImageBackground>
+
+              </TouchableOpacity>
+             
+            )}
+
+            {/* If not found */}
+            {selectedAccount === 'not-found' && (
+              <View style={styles.accountInfo}>
+                <Text style={styles.notFoundText}>Account not found</Text>
+              </View>
+            )}
           </View>
 
           {/* Floating Bottom Button */}
           <View style={[styles.bottomButton, { bottom: 20 }]}>
-            <TouchableOpacity
-              style={styles.nextButton}
-              onPress={() => {
-                if (account !== '') {
-                  console.log('Check account:', account);
-                } else {
-                  console.log('Go Next');
-                }
-              }}
-            >
-              <Text style={styles.nextButtonText}>
-                {account !== '' ? 'Check Account ' : 'Next'}
-              </Text>
-            </TouchableOpacity>
+           
+
+              <CustomButton
+            title={historySelected || account !== '' ? 'Check Account' : 'Next'}
+            onPress={handleCheckAccount}
+            borderRadius={50}
+          />
+            
           </View>
         </View>
       </ScrollView>
@@ -235,21 +216,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#757575',
   },
-  accountText: {
-    marginTop: '10%',
-    marginHorizontal: '3%',
-    fontSize: 14,
-  },
-  input: {
-    padding: 10,
-    borderRadius: 8,
-    margin: 12,
-    backgroundColor: '#F5F5F5',
-    fontSize: 16,
-  },
   historyHeaderText: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 8,
+    marginTop: '15%',
     color: Colors.third,
   },
   historyItem: {
@@ -289,7 +259,7 @@ const styles = StyleSheet.create({
   HistoryBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    margin: '3%',
+    paddingBottom: 13,
     borderBottomWidth: 1,
     borderStyle: 'dashed',
     borderColor: Colors.third,
@@ -302,6 +272,7 @@ const styles = StyleSheet.create({
   bankimage: {
     width: 44,
     height: 44,
+    resizeMode: 'contain',
   },
   both: {
     flexDirection: 'row',
@@ -324,13 +295,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   backgroundimage: {
-    marginHorizontal: '3%',
-    borderRadius: 50,
+    marginHorizontal:8,
+    borderRadius: 100,
   },
   AccountBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: '3%',
+    marginBottom:8,
   },
   backiconforaccount: {
     width: 24,

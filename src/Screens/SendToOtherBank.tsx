@@ -22,103 +22,82 @@ const SendToOtherBank = () => {
       id: '1',
       title: 'Amara Bank',
       image: require('../assets/Banks/Amara.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '2',
       title: 'Zemen Bank',
       image: require('../assets/Banks/ZemenBank.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '3',
       title: 'Commerical Bank of Ethiopia',
       image: require('../assets/Banks/commercialBank.png'),
-      onpress: () => {
-        navigation.navigate('EnterAccountNumber');
-      },
+  
     },
     {
       id: '4',
       title: 'Dashen Bank',
       image: require('../assets/Banks/DashenBank.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '5',
       title: 'Bank of Abyssinia ',
       image: require('../assets/Banks/Absiniya.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '6',
       title: 'Awash International      Bank',
       image: require('../assets/Banks/AwashBank.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '7',
       title: 'Commerical Bank of Ethiopia',
       image: require('../assets/Banks/commercialBank.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '8',
       title: 'Amara Bank',
       image: require('../assets/Banks/Amara.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '9',
       title: 'Zemen Bank',
       image: require('../assets/Banks/ZemenBank.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '10',
       title: 'Bank of Abyssinia ',
       image: require('../assets/Banks/Absiniya.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '11',
       title: 'Awash International      Bank',
       image: require('../assets/Banks/AwashBank.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
     {
       id: '12',
       title: 'Dashen Bank',
       image: require('../assets/Banks/DashenBank.png'),
-      onpress: () => {
-        navigation.navigate('');
-      },
+     
     },
   ];
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
-    onPress={item.onpress}
+    onPress={()=>{
+        navigation.navigate('EnterAccountNumber',{bankItem:item});
+
+    }}
     
     
     style={styles.BanksContainer}>
@@ -128,16 +107,18 @@ const SendToOtherBank = () => {
   );
 
   const [searchText, setSearchText] = useState('');
+  
 
-  const handleSearchChange = text => {
-    setSearchText(text);
-    // You can add your search/filter logic here
-    console.log('Search text:', text);
-  };
+  // ✅ Filtered list based on search
+  const filteredBanks = Bank.filter(bank =>
+    bank.title.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+
 
   return (
     <View style={styles.Container}>
-     <OtherBanktopbar title="Transfer to Other Bank" />
+     <OtherBanktopbar title="Transfer to other bank" />
 
       <ScrollView>
         <View style={styles.searchinput}>
@@ -147,29 +128,34 @@ const SendToOtherBank = () => {
               style={styles.searchicon}
             />
           </View>
+
+          
           <View>
             <TextInput
-              style={styles.input}
-              placeholder="Search Bank"
-              value={searchText}
-              onChangeText={handleSearchChange}
-              clearButtonMode="while-editing" // iOS specific: adds a clear button
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+          style={styles.input}
+          placeholder="Search Bank"
+          value={searchText}
+          onChangeText={setSearchText}
+          clearButtonMode="while-editing" // iOS only
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
           </View>
         </View>
 
-        <Text style={styles.selectBankText}>Select a Bank</Text>
-        <FlatList
-          data={Bank}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          numColumns={3}
-          columnWrapperStyle={styles.row}
-          scrollEnabled={false}
-          contentContainerStyle={styles.gridContainer}
-        />
+        <Text style={styles.selectBankText}>Select a bank</Text>
+         <FlatList
+        data={filteredBanks} // ✅ using filtered list
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        numColumns={3}
+        columnWrapperStyle={styles.row}
+        scrollEnabled={false}
+        contentContainerStyle={styles.gridContainer}
+        ListEmptyComponent={
+          <Text style={styles.noResultText}>No bank found</Text>
+        }
+      />
       </ScrollView>
     </View>
   );
@@ -205,7 +191,7 @@ const styles = StyleSheet.create({
     marginHorizontal: '3%',
     marginTop: '3%',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: 'semibold',
   },
   BanksContainer: {
     flex: 1,

@@ -13,12 +13,12 @@ import CustomButton from './CustomButton';
 
 const { width } = Dimensions.get('window');
 import { useNavigation } from '@react-navigation/native';
+import Colors from './Colors';
 
 // ✅ Sample cards with gridData
 
 const CardCarousel = () => {
-
-  const navigation= useNavigation();
+  const navigation = useNavigation();
   const cards = [
     {
       id: '1',
@@ -39,7 +39,11 @@ const CardCarousel = () => {
           image: require('../assets/IC_OtherBank.png'),
           onPress: () => navigation.navigate('SendOtherBank'),
         },
-        { id: '3', title: 'Send To Wallet', image: require('../assets/IC_Wallet.png') },
+        {
+          id: '3',
+          title: 'Send To Wallet',
+          image: require('../assets/IC_Wallet.png'),
+        },
         {
           id: '4',
           title: 'Chat Banking',
@@ -96,6 +100,9 @@ const CardCarousel = () => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [activeGridPage, setActiveGridPage] = useState(0);
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+  const [isAccountNumberVisible,setisAccountNumberVisible]=useState(false)
+
+  const toggleAccount =()=>setisAccountNumberVisible(!isAccountNumberVisible)
 
   const toggleBalance = () => setIsBalanceVisible(!isBalanceVisible);
 
@@ -194,26 +201,56 @@ const CardCarousel = () => {
           </View>
 
           <View style={styles.buttonRow}>
-            <CustomButton
-              width="48%"
-              height={60}
-              backgroundColor="rgba(255,255,255,0.07)"
-              borderRadius={10}
-              title="Account Number"
-              subtitle={item.accountNumber}
-              onPress={() => console.log('Account Number Pressed')}
-              imageSource={require('../assets/bankhouese.png')}
-            />
-            <CustomButton
-              width="48%"
-              height={60}
-              backgroundColor="rgba(255,255,255,0.07)"
-              borderRadius={10}
-              title="Budget"
-              subtitle={item.budget}
-              onPress={() => console.log('Budget Pressed')}
-              imageSource={require('../assets/solarGraph.png')}
-            />
+            <TouchableOpacity style={styles.botton}
+            onPress={toggleAccount}
+            
+            
+            
+            >
+              <View>
+                <Image
+                  source={require('../assets/bankhouese.png')}
+                  style={styles.icon}
+                />
+              </View>
+              <View style={{}}>
+                <Text
+                 style={styles.textinbutton}
+                >
+                  Account Number
+                </Text>
+                <Text
+                  style={{
+                    color: Colors.secondary,
+                  }}
+                >
+                 {isAccountNumberVisible || isBalanceVisible ? item.accountNumber : '**** **** ****'} 
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.botton}>
+              <View>
+                <Image
+                  source={require('../assets/solarGraph.png')}
+                  style={styles.icon}
+                />
+              </View>
+              <View style={{}}>
+                <Text style={styles.textinbutton}>Budget</Text>
+                <Text
+                  style={{
+                    color: Colors.secondary,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  5,000.00 USD{' '}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+           
+           
           </View>
         </View>
       </ImageBackground>
@@ -285,7 +322,30 @@ const styles = StyleSheet.create({
   amountContainer: { alignItems: 'center', marginTop: '5%' },
   accountName: { fontSize: 16, color: 'white' },
   balanceAmount: { fontSize: 28, fontWeight: 'bold', color: 'white' },
-  buttonRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  botton: {
+    flexDirection: 'row',
+    gap: 10,
+    width: 170,
+    height: 48,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginBottom: 6,
+  },
+  icon: {
+    width: 30,
+    height: 50,
+    resizeMode: 'contain',
+  },
+  textinbutton: {
+    paddingVertical: 2,
+    color: Colors.secondary,
+  },
 
   gridPage: {
     width: width * 0.9, // ✅ same width as the card
@@ -307,14 +367,14 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     resizeMode: 'contain',
-    marginBottom: "2%", // ✅ spacing between icon and text
+    marginBottom: '2%', // ✅ spacing between icon and text
   },
 
   gridText: {
     fontSize: 14,
     textAlign: 'center',
-    alignSelf:'center',
-    paddingHorizontal:6
+    alignSelf: 'center',
+    paddingHorizontal: 6,
   },
 
   // Dots
@@ -335,4 +395,3 @@ const styles = StyleSheet.create({
 function setModalVisible(arg0: boolean) {
   throw new Error('Function not implemented.');
 }
-

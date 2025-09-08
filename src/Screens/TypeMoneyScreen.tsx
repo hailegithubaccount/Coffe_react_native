@@ -13,18 +13,17 @@ import React, { useState } from 'react';
 import OtherBanktopbar from '../Components/otherBanktopbar';
 import Colors from '../Components/Colors';
 import Modal from 'react-native-modal';
+import CustomButton from '../Components/CustomButton';
 
 const TypeMoney = ({ route, navigation }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(prev => !prev);
+  const { recipient } = route.params;
 
-  const { AccountNumber } = route.params || {};
-  const [selectedAccount, setSelectedAccount] = useState(AccountNumber || null);
-
-  const [isModalVisible, setIsModalVisible] = useState(false); // Account Modal
-  const [nextModalVisible, setNextModalVisible] = useState(false); // Budget + Category Modal
-  const [tempSelection, setTempSelection] = useState(selectedAccount);
-
+  const [selectedAccount, setSelectedAccount] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [nextModalVisible, setNextModalVisible] = useState(false);
+  const [tempSelection, setTempSelection] = useState('');
   const [amount, setAmount] = useState('');
   const [showKeyboard, setShowKeyboard] = useState(true);
 
@@ -37,102 +36,75 @@ const TypeMoney = ({ route, navigation }) => {
   const handleKeyPress = key => setAmount(prev => prev + key);
   const handleBackspace = () => setAmount(prev => prev.slice(0, -1));
 
-  const Bank = [
-    {
-      id: '1',
-      title: 'House Rental',
-      amount: '10,000',
-      image: require('../assets/inthebottomsheet/House.png'),
-      onpress: () =>
-        navigation.navigate('ConfirmTransfer', {
-          reason: 'House Rental',
-          amount: '10,000',
-          accountNumber: selectedAccount,
-          recipientName: 'John Doe',
-          isBudgetEnabled: isEnabled,
-        }),
-    },
-    {
-      id: '2',
-      title: 'Loan',
-      amount: '5,000',
-      image: require('../assets/inthebottomsheet/Loan.png'),
-      onpress: () =>
-        navigation.navigate('ConfirmTransfer', {
-          reason: 'Loan',
-          amount: '5,000',
-          accountNumber: selectedAccount,
-          recipientName: 'John Doe',
-          isBudgetEnabled: isEnabled,
-        }),
-    },
-    {
-      id: '3',
-      title: 'Groceries',
-      amount: '10,000',
-      image: require('../assets/inthebottomsheet/Grocerry.png'),
-      onpress: () =>
-        navigation.navigate('ConfirmTransfer', {
-          reason: 'Groceries',
-          amount: '10,000',
-          accountNumber: selectedAccount,
-          recipientName: 'John Doe',
-          isBudgetEnabled: isEnabled,
-        }),
-    },
-    {
-      id: '4',
-      title: 'Food',
-      amount: '6,000',
-      image: require('../assets/inthebottomsheet/Food.png'),
-      onpress: () =>
-        navigation.navigate('ConfirmTransfer', {
-          reason: 'Food',
-          amount: '6,000',
-          accountNumber: selectedAccount,
-          recipientName: 'John Doe',
-          isBudgetEnabled: isEnabled,
-        }),
-    },
-    {
-      id: '5',
-      title: 'Transport',
-      amount: '1,500',
-      image: require('../assets/inthebottomsheet/Transport.png'),
-      onpress: () =>
-        navigation.navigate('ConfirmTransfer', {
-          reason: 'Transport',
-          amount: '1,500',
-          accountNumber: selectedAccount,
-          recipientName: 'John Doe',
-          isBudgetEnabled: isEnabled,
-        }),
-    },
-    {
-      id: '6',
-      title: 'Other',
-      amount: '1,000',
-      image: require('../assets/inthebottomsheet/otherss.png'),
-      onpress: () =>
-        navigation.navigate('ConfirmTransfer', {
-          reason: 'Other',
-          amount: '1,000',
-          accountNumber: selectedAccount,
-          recipientName: 'John Doe',
-          isBudgetEnabled: isEnabled,
-        }),
-    },
-  ];
+  // ✅ Budget state (editable)
+  const [budgets, setBudgets] = useState([
+    { id: '1', title: 'House Rental', amount: 10000, image: require('../assets/inthebottomsheet/House.png') },
+    { id: '2', title: 'Loan', amount: 5000, image: require('../assets/inthebottomsheet/Loan.png') },
+    { id: '3', title: 'Groceries', amount: 10000, image: require('../assets/inthebottomsheet/Grocerry.png') },
+    { id: '4', title: 'Food', amount: 6000, image: require('../assets/inthebottomsheet/Food.png') },
+    { id: '5', title: 'Transport', amount: 1500, image: require('../assets/inthebottomsheet/Transport.png') },
+    { id: '6', title: 'Other', amount: 1000, image: require('../assets/inthebottomsheet/otherss.png') },
+  ]);
+
+  // ✅ Handle budget selection
+ const movetoconfrimwithoutbudget = () => {
+  if (!amount || parseFloat(amount) === 0) return;
+
+  const typedAmount = parseFloat(amount);
+
+  navigation.navigate('ConfirmTransfer', {
+    amount: typedAmount,
+    SenderAccount: selectedAccount,
+    recipientName: recipient.holder,
+    recipientAccount: recipient.AccountNumber,
+    isBudgetEnabled: isEnabled,
+    remainingBudget: null, // 👈 since no budget chosen
+  });
+
+  setNextModalVisible(false); // close modal
+};
+
+
+
+    
+  const handleBudgetPress = (item) => {
+    if (!amount || parseFloat(amount) === 0) return; // do nothing if amount not entered
+
+    const typedAmount = parseFloat(amount);
+
+    // Deduct from selected budget
+    setBudgets(prev =>
+      prev.map(b =>
+        b.id === item.id
+          ? { ...b, amount: Math.max(b.amount - typedAmount, 0) } // prevent negative
+          : b
+      )
+    );
+
+    // Close modal first
+    setNextModalVisible(false);
+
+    // Navigate to confirm page
+    navigation.navigate('ConfirmTransfer', {
+     
+      amount: typedAmount,
+      SenderAccount: selectedAccount,
+      recipientName: recipient.holder,
+      recipientAccount:recipient.AccountNumber,
+      isBudgetEnabled: isEnabled,
+      remainingBudget: Math.max(item.amount - typedAmount, 0),
+    });
+  };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={item.onpress} style={styles.BanksContainer}>
+    <TouchableOpacity onPress={() => handleBudgetPress(item)} style={styles.BanksContainer}>
       <Image source={item.image} style={styles.BanksImage} />
       <Text style={styles.BanksName}>{item.title}</Text>
       <Text style={styles.amount}>{item.amount} ETB</Text>
     </TouchableOpacity>
   );
 
-  const accounts = [
+  const SenderAccounts = [
     { id: '1', number: '1234 5678 9012' },
     { id: '2', number: '9876 5432 1098' },
     { id: '3', number: '1122 3344 5566' },
@@ -149,12 +121,12 @@ const TypeMoney = ({ route, navigation }) => {
             activeOpacity={0.8}
             onPress={() => {
               setShowKeyboard(true);
-              Keyboard.dismiss(); // optional: hide default keyboard
+              Keyboard.dismiss();
             }}
           >
             <View style={styles.amountBox}>
               <Text style={styles.amountText}>
-                {amount !== '' ? `${amount} Birr` : '0 Birr'}
+                {amount !== '' ? `${amount} Birr` : '0 Birr'} 
               </Text>
             </View>
           </TouchableOpacity>
@@ -164,13 +136,13 @@ const TypeMoney = ({ route, navigation }) => {
         <Text style={styles.SelectText}>Select Account</Text>
         <TouchableOpacity
           onPress={() => {
-            setTempSelection(selectedAccount);
-            setIsModalVisible(true); // open account modal
+            setTempSelection(selectedAccount || '');
+            setIsModalVisible(true);
           }}
           style={styles.borderSelecetAccount}
         >
           <Text style={styles.SelectAccount}>
-            {selectedAccount ? selectedAccount : 'Select Account'}
+            {selectedAccount ? selectedAccount : '000000000000'}
           </Text>
           <Image
             source={require('../assets/Downicon.png')}
@@ -229,15 +201,20 @@ const TypeMoney = ({ route, navigation }) => {
 
         {/* Next Button */}
         <View style={styles.bottomButton}>
-          <TouchableOpacity
+          <CustomButton
+            title="Next"
             onPress={() => {
-              Keyboard.dismiss(); // hide keyboard before opening modal
-              setNextModalVisible(true); // open budget modal
+              Keyboard.dismiss();
+              setNextModalVisible(true);
             }}
-            style={styles.nextButton}
-          >
-            <Text style={styles.nextButtonText}>Next</Text>
-          </TouchableOpacity>
+            width="95%"
+            disabled={amount === '' || parseFloat(amount) === 0}
+            style={[
+              styles.nextButton,
+              (amount === '' || parseFloat(amount) === 0) &&
+                styles.disabledButton,
+            ]}
+          />
         </View>
       </ScrollView>
 
@@ -276,7 +253,7 @@ const TypeMoney = ({ route, navigation }) => {
 
           <Text style={styles.modalTitle}>Select Account</Text>
           <ScrollView>
-            {accounts.map(acc => {
+            {SenderAccounts.map(acc => {
               const isSelected = tempSelection === acc.number;
               return (
                 <TouchableOpacity
@@ -298,7 +275,7 @@ const TypeMoney = ({ route, navigation }) => {
                         ? require('../assets/rightwithcricle.png')
                         : require('../assets/Ellipse20.png')
                     }
-                    style={{ width: 15, height: 15, marginRight: 10 }}
+                    style={{ width: 13, height: 13, marginRight: 10 }}
                   />
                   <Image
                     source={require('../assets/house.png')}
@@ -328,14 +305,14 @@ const TypeMoney = ({ route, navigation }) => {
         <View style={[styles.modalContent, { maxHeight: 500 }]}>
           <View style={styles.modalButtons}>
             <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20 }}>
-              Budget selection on Transfers
+              Select Budget
             </Text>
             <TouchableOpacity
               style={[
                 styles.modalBtn,
                 { backgroundColor: 'rgba(71,99,255,0.1)' },
               ]}
-              onPress={() => setNextModalVisible(false)}
+              onPress={movetoconfrimwithoutbudget} 
             >
               <Text style={{ color: Colors.primary, fontWeight: 'bold' }}>
                 Skip
@@ -362,7 +339,7 @@ const TypeMoney = ({ route, navigation }) => {
           </View>
 
           <FlatList
-            data={Bank}
+            data={budgets}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             numColumns={3}
@@ -422,7 +399,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   keyText: { fontSize: 31 },
-  bottomButton: { marginHorizontal: '3%', marginTop: '20%' },
+  bottomButton: { marginTop: '15%' },
   nextButton: {
     backgroundColor: Colors.primary || '#007bff',
     padding: 16,
@@ -430,6 +407,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nextButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  disabledButton: {
+    backgroundColor: 'gray',
+  },
   bottomModal: { justifyContent: 'flex-end', margin: 0 },
   modalContent: {
     backgroundColor: 'white',
@@ -437,7 +417,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: '2%' },
+  modalTitle: { fontSize: 14, fontWeight: 'bold', marginBottom: '2%' },
   accountRow: {
     flexDirection: 'row',
     alignItems: 'center',

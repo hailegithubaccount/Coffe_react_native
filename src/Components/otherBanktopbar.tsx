@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
   headerTitle: {
     color: 'black',
     fontSize: 16,
-    fontWeight: '600',
-    fontFamily:'Outfit-Black',
+   
+    
   },
   iconImage: {
     width: 34,

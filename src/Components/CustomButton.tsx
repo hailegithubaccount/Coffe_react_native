@@ -14,14 +14,10 @@ const CustomButton = ({
   subtitleColor = "#eee",
   subtitleSize = 13,   // 👈 new: font size for subtitle
   borderColor = null,
-  width = "90%",
+  width = "100%",
   height = 70,
-  borderRadius = 12,
+  borderRadius = 50,
   disabled = false,
-  imageSource = null,
-  disabledImageSource = null,
-  imageWidth = 24,
-  imageHeight = 24,
   layout = "row", // "row" (text beside image) | "column" (text below image)
 }) => {
   return (
@@ -47,18 +43,7 @@ const CustomButton = ({
         ]}
       >
         {/* ✅ Image */}
-        {imageSource && (
-          <Image
-            source={disabled ? disabledImageSource || imageSource : imageSource}
-            style={{
-              width: imageWidth,
-              height: imageHeight,
-              marginRight: layout === "row" ? 8 : 0,
-              marginBottom: layout === "column" ? 6 : 0,
-            }}
-            resizeMode="contain"
-          />
-        )}
+       
 
         {/* ✅ Texts */}
         <View style={styles.textContainer}>
@@ -87,7 +72,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
+    
   },
   content: {
     flexDirection: "row",
