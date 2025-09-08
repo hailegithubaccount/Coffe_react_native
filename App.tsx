@@ -1,52 +1,53 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import TabNavigators from './src/Navigators/TabNavigators';
-import OrderHistoryScreens from './src/Screens/OrderHistoryScreens';
-import LoginScreens from './src/Screens/LoginScreens';
-import CartScreens from './src/Screens/CartScreens';
-import PaymentScreens from './src/Screens/PaymentScreens'
+import Tab from './src/Navigators/TabNavigators';
+
+import OpenScreens from './src/Screens/OpemScreens';
 import { CartProvider } from './src/Context/CartContext'; 
-import profileScreens from './src/Screens/ProfileScreens'
+import SignupScreens from './src/Screens/SignupScreens';
+import CreateAccountScreen from './src/Screens/CreateAccountScreen';
+import VerificationScreen from './src/Screens/VerficationcodeScreen';
+import NewPinScreen from './src/Screens/NewPin';
+import ConfirmScreen from './src/Screens/Confirmscreen';
+import SendToOtherBank from './src/Screens/SendToOtherBank';
+import EnterAccountNumber from './src/Screens/AccountNumber';
+import TypeMoneyScreen from './src/Screens/TypeMoneyScreen';
+import ConfirmTransfer from './src/Screens/ConfirmTransfer';
+import SuccessfulTransaction from './src/Screens/SuccessfulTransaction'
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-     <CartProvider>
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown:false}}>
-        <Stack.Screen name="Login" component={LoginScreens} />
-        <Stack.Screen
-        name="Tab"
-        component={TabNavigators}
-        options={{animation:"slide_from_bottom",title:"Tab page"}}
-        >
-       </Stack.Screen>    
-        <Stack.Screen
-        name="details"
-        component={OrderHistoryScreens}
-        options={{animation:"slide_from_bottom",title:"order page"}}
-        >
-       </Stack.Screen> 
+    <CartProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ 
+          
+          
+          headerShown: false }}>
+          
+          {/* <Stack.Screen name="Open" component={OpenScreens} /> */}
+          <Stack.Screen
+            name="Tab"
+            component={Tab}
+            // options={{ animation: "slide_from_bottom", title: "Tab page" }}
+          />
+          <Stack.Screen name="SignUp" component={SignupScreens} />
+          <Stack.Screen name="AccountCreate" component={CreateAccountScreen} />
+          <Stack.Screen name="Verification" component={VerificationScreen} />
+          <Stack.Screen name="NewPin" component={NewPinScreen} />
+          <Stack.Screen name="Confirm" component={ConfirmScreen} />
+          <Stack.Screen name="SendOtherBank" component={SendToOtherBank} />
+          <Stack.Screen name="EnterAccountNumber" component={EnterAccountNumber} />
+          <Stack.Screen name="TypeMoney" component={TypeMoneyScreen} />
+           <Stack.Screen name="ConfirmTransfer" component={ConfirmTransfer} />
+                  <Stack.Screen name="SuccessfulTransaction" component={SuccessfulTransaction} />
+           
 
-        <Stack.Screen
-        name="payment"
-        component={PaymentScreens}
-        options={{animation:"slide_from_bottom",title:"order page"}}
-        >
-       </Stack.Screen> 
-
-        <Stack.Screen
-        name="profile"
-        component={profileScreens }
-        options={{animation:"slide_from_bottom",title:"order page"}}
-        >
-       </Stack.Screen> 
-       
-       
-      </Stack.Navigator>
-    </NavigationContainer>
+          
+        </Stack.Navigator>
+      </NavigationContainer>
     </CartProvider>
   );
 }

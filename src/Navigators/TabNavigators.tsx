@@ -1,99 +1,167 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react';
-import {createBottomTabNavigator} from'@react-navigation/bottom-tabs'
-import CartScreens from '../Screens/CartScreens';
-import DetailScreens from '../Screens/PaymentScreens';
-import FavouriteScreens from '../Screens/FavouriteScreens';
-import HomeScreens from '../Screens/HomeScreens';
-import { COLORS } from '../theme/theme';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React from "react";
+import {
+  Alert,
+  Animated,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Text,
+} from "react-native";
+import { CurvedBottomBar } from "react-native-curved-bottom-bar";
 
+// Your screens
+import Screen1 from "../Screens/HomeScreens";
+import Screen2 from "../Screens/MiniApp";
+import Screen3 from "../Screens/ProfileScreen";
+import Screen4 from "../Screens/TransactionsScreen";
 
+export default function BottomTabs() {
+  // Function to render image + label
+  const _renderIcon = (routeName, selectedTab) => {
+    let iconSource;
+    let label = "";
 
+    switch (routeName) {
+      case "title1":
+        iconSource = require("../assets/home-2.png");
+        label = "Home";
+        break;
+      case "title2":
+        iconSource = require("../assets/nearHomeimage.png");
+        label = "Transactions";
+        break;
+      case "title3":
+        iconSource = require("../assets/miniapp.png");
+        label = "Mini Apps";
+        break;
+      case "title4":
+        iconSource = require("../assets/profile.png");
+        label = "Profile";
+        break;
+    }
 
+    return (
+      <>
+        <Image
+          source={iconSource}
+          style={[
+            styles.icon,
+            { tintColor: routeName === selectedTab ? "#012169" : "gray" },
+          ]}
+        />
+        <Text
+          style={[
+            styles.label,
+            { color: routeName === selectedTab ? "#131C66" : "gray" },
+          ]}
+        >
+          {label}
+        </Text>
+      </>
+    );
+  };
 
+  // Custom tabBar button
+  const renderTabBar = ({ routeName, selectedTab, navigate }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => navigate(routeName)}
+        style={styles.tabbarItem}
+      >
+        {_renderIcon(routeName, selectedTab)}
+      </TouchableOpacity>
+    );
+  };
 
-const Tab=createBottomTabNavigator();
-    const TabNavigators = () => {
   return (
-  <Tab.Navigator
-  screenOptions={{
-    tabBarHideOnKeyboard: true,
-    headerShown: false,
-    tabBarShowLabel: false,
-    tabBarStyle: styles.tabBarStyle,
+    <CurvedBottomBar.Navigator
+      type="DOWN"
+      style={styles.bottomBar}
+      shadowStyle={styles.shawdow}
+      height={70}            // smaller bar height
+      circleWidth={80}       // 🔑 makes the curve smaller (like your image)
+      bgColor="white"
+      
+      initialRouteName="title1"
+      borderTopLeftRight
+      renderCircle={({ selectedTab, navigate }) => (
+        <Animated.View style={styles.btnCircleUp}>
+          <TouchableOpacity onPress={() => Alert.alert("QR Clicked!")}>
+            <Image
+              source={require("../assets/QR.png")}
+              style={{ width: 50, height: 50 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+      tabBar={renderTabBar}
+    >
+      {/* LEFT side icons */}
+      <CurvedBottomBar.Screen
+        name="title1"
+        position="LEFT"
+        options={{
+    headerShown: false, // removes the top header
   }}
->
-  <Tab.Screen
-    name="Home"
-    component={HomeScreens}
-    options={{
-      tabBarIcon: ({ focused }) => (
-        <Icon
-          name="home"
-          size={24}
-          color={focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex}
-        />
-      ),
-    }}
-  />
-  <Tab.Screen
-    name="Cart"
-    component={CartScreens}
-    options={{
-      tabBarIcon: ({ focused }) => (
-        <Icon
-          name="shopping-cart"
-          size={24}
-          color={focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex}
-        />
-      ),
-    }}
-  />
-  <Tab.Screen
-    name="Favouritee"
-    component={FavouriteScreens}
-    options={{
-      tabBarIcon: ({ focused }) => (
-        <Icon
-          name="favorite"
-          size={24}
-          color={focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex}
-        />
-      ),
-    }}
-  />
-  <Tab.Screen
-    name="History"
-    component={DetailScreens}
-    options={{
-      tabBarIcon: ({ focused }) => (
-        <Icon
-          name="history"
-          size={24}
-          color={focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex}
-        />
-      ),
-    }}
-  />
-</Tab.Navigator>
+        component={Screen1}
+      />
+      <CurvedBottomBar.Screen
+        name="title3"
+        position="LEFT"
+        options={{
+    headerShown: false, // removes the top header
+  }}
+        component={Screen3}
+      />
 
-  )
+      {/* RIGHT side icons */}
+      <CurvedBottomBar.Screen
+        name="title2"
+        position="RIGHT"
+        component={Screen2}
+          options={{
+    headerShown: false, // removes the top header
+  }}
+      />
+      <CurvedBottomBar.Screen
+        name="title4"
+        position="RIGHT"
+        component={Screen4}
+          options={{
+          headerShown: false, // removes the top header
+  }}
+      />
+    </CurvedBottomBar.Navigator>
+  );
 }
-
-export default TabNavigators
 
 const styles = StyleSheet.create({
-  tabBarStyle:{
-    height:80,
-    position:"absolute",
-    // borderTopWidth:0,
-    backgroundColor:COLORS.primaryBlackHex,
-    // elevation:0,
-    // borderTopColor:'transpart'
-
-
-  }
-   
-}
-)
+  shawdow: {
+    shadowColor: "#DDDDDD",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 5,
+  },
+  bottomBar: {},
+  btnCircleUp: {
+    bottom: 40, // pushes QR higher above bar
+    alignItems: "center",
+    justifyContent: "center",
+    // no background, only the QR image is shown
+  },
+  tabbarItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginBottom: 2,
+  },
+  label: {
+    fontSize: 12,
+    textAlign: "center",
+  },
+});      
